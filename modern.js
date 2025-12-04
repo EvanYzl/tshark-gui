@@ -547,6 +547,14 @@ function cacheElements() {
     elements.resultTitle = document.getElementById('resultTitle');
     elements.closeResultModal = document.getElementById('closeResultModal');
     elements.copyResult = document.getElementById('copyResult');
+
+    // Knowledge base
+    elements.knowledgeSearch = document.getElementById('knowledgeSearch');
+    elements.knowledgeCategories = document.getElementById('knowledgeCategories');
+    elements.knowledgeList = document.getElementById('knowledgeList');
+    elements.knowledgeDetail = document.getElementById('knowledgeDetail');
+    elements.closeDetail = document.getElementById('closeDetail');
+    elements.applyKnowledge = document.getElementById('applyKnowledge');
 }
 
 function bindEvents() {
@@ -880,16 +888,32 @@ function resetFiltersAndOptions() {
 }
 
 // ===== Run Command Functions =====
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'http://localhost:8765';
 
-async function runCommand() {
+async function runCommand(event) {
+    // 阻止默认行为和事件冒泡
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    console.log('runCommand called');
+
     const command = state.generatedCommand;
     if (!command) {
         showToast('请先生成命令');
         return;
     }
 
+    console.log('Executing command:', command);
+
     // 显示结果模态框
+    if (!elements.resultModal) {
+        console.error('resultModal not found');
+        showToast('结果窗口未找到');
+        return;
+    }
+
     elements.resultModal.classList.remove('hidden');
     elements.resultOutput.textContent = '正在执行命令...\n\n' + command;
     elements.resultStatus.textContent = '运行中';
@@ -897,6 +921,7 @@ async function runCommand() {
     elements.runCmd.disabled = true;
 
     try {
+        console.log('Fetching:', `${API_BASE}/api/run`);
         const response = await fetch(`${API_BASE}/api/run`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -904,6 +929,7 @@ async function runCommand() {
         });
 
         const result = await response.json();
+        console.log('Result:', result);
 
         if (result.success) {
             elements.resultOutput.textContent = result.output || '(无输出)';
@@ -915,6 +941,7 @@ async function runCommand() {
             elements.resultStatus.className = 'status-badge error';
         }
     } catch (err) {
+        console.error('Fetch error:', err);
         elements.resultOutput.textContent = `连接失败: ${err.message}\n\n请确保后端服务已启动:\ncd backend && python server.py`;
         elements.resultStatus.textContent = '连接失败';
         elements.resultStatus.className = 'status-badge error';
@@ -1384,3 +1411,199 @@ async function callGPT(userMessage) {
     const data = await response.json();
     return data.choices[0].message.content;
 }
+
+// ===== Knowledge Base Functions =====
+let currentKnowledgeEntry = null;
+let knowledgeActiveCategory = 'all';
+
+function initKnowledgeBase() {
+    if (typeof knowledgeBase === 'undefined') {
+        console.warn('Knowledge base not loaded');
+        return;
+    }
+
+    renderKnowledgeCategories();
+    renderKnowledgeEntries();
+    bindKnowledgeEvents();
+}
+
+function renderKnowledgeCategories() {
+    if (!elements.knowledgeCategories) return;
+
+    let html = `<button class="category-btn active" data-category="all">📋 全部</button>`;
+
+    knowledgeBase.categories.forEach(cat => {
+        html += `<button class="category-btn" data-category="${cat.id}">${cat.icon} ${cat.name}</button>`;
+    });
+
+    elements.knowledgeCategories.innerHTML = html;
+}
+
+function renderKnowledgeEntries(filter = '') {
+    if (!elements.knowledgeList) return;
+
+    let entries = knowledgeBase.entries;
+
+    // 按分类过滤
+    if (knowledgeActiveCategory !== 'all') {
+        entries = entries.filter(e => e.category === knowledgeActiveCategory);
+    }
+
+    // 按搜索词过滤
+    if (filter) {
+        const lowerFilter = filter.toLowerCase();
+        entries = entries.filter(e =>
+            e.title.toLowerCase().includes(lowerFilter) ||
+            e.description.toLowerCase().includes(lowerFilter) ||
+            e.tags.some(t => t.toLowerCase().includes(lowerFilter))
+        );
+    }
+
+    const getCategoryIcon = (catId) => {
+        const cat = knowledgeBase.categories.find(c => c.id === catId);
+        return cat ? cat.icon : '📄';
+    };
+
+    const difficultyText = { easy: '简单', medium: '中等', hard: '困难' };
+
+    let html = '';
+    entries.forEach(entry => {
+        html += `
+            <div class="knowledge-card" data-id="${entry.id}">
+                <div class="card-header">
+                    <span class="card-icon">${getCategoryIcon(entry.category)}</span>
+                    <span class="card-title">${entry.title}</span>
+                </div>
+                <p class="card-desc">${entry.description}</p>
+                <div class="card-tags">
+                    <span class="difficulty ${entry.difficulty}">${difficultyText[entry.difficulty]}</span>
+                    ${entry.tags.slice(0, 3).map(t => `<span class="tag">${t}</span>`).join('')}
+                </div>
+            </div>
+        `;
+    });
+
+    if (entries.length === 0) {
+        html = '<p style="color: var(--text-secondary); text-align: center; padding: 40px;">未找到匹配的知识条目</p>';
+    }
+
+    elements.knowledgeList.innerHTML = html;
+}
+
+function showKnowledgeDetail(entryId) {
+    const entry = knowledgeBase.entries.find(e => e.id === entryId);
+    if (!entry) return;
+
+    currentKnowledgeEntry = entry;
+
+    document.getElementById('detailTitle').textContent = entry.title;
+    document.getElementById('detailDesc').textContent = entry.description;
+    document.getElementById('detailFilter').textContent = entry.tsharkFilter || '(无特定过滤器)';
+
+    // 渲染技巧
+    const tipsHtml = entry.tips.map(tip => `<li>${tip}</li>`).join('');
+    document.getElementById('detailTips').innerHTML = tipsHtml;
+
+    // 渲染命令
+    const cmdsHtml = entry.commands.map(cmd => `<div class="command-block">${cmd}</div>`).join('');
+    document.getElementById('detailCommands').innerHTML = cmdsHtml;
+
+    elements.knowledgeDetail.classList.remove('hidden');
+}
+
+function hideKnowledgeDetail() {
+    elements.knowledgeDetail.classList.add('hidden');
+    currentKnowledgeEntry = null;
+}
+
+function applyKnowledgeFilter() {
+    if (!currentKnowledgeEntry) return;
+
+    // 应用过滤器到自定义过滤框
+    if (currentKnowledgeEntry.tsharkFilter) {
+        elements.customFilter.value = currentKnowledgeEntry.tsharkFilter;
+        state.customFilter = currentKnowledgeEntry.tsharkFilter;
+    }
+
+    // 如果有预设字段，则选中
+    if (currentKnowledgeEntry.tsharkFields && currentKnowledgeEntry.tsharkFields.length > 0) {
+        // 清除现有选择
+        elements.fieldCheckboxes.forEach(cb => cb.checked = false);
+        state.selectedFields = [];
+
+        // 选中预设字段
+        currentKnowledgeEntry.tsharkFields.forEach(field => {
+            const checkbox = Array.from(elements.fieldCheckboxes).find(cb => cb.value === field);
+            if (checkbox) {
+                checkbox.checked = true;
+                state.selectedFields.push(field);
+            }
+        });
+
+        // 如果有字段，切换到字段输出模式
+        if (state.selectedFields.length > 0) {
+            const fieldsRadio = document.querySelector('input[name="outputFormat"][value="fields"]');
+            if (fieldsRadio) {
+                fieldsRadio.checked = true;
+                state.outputFormat = 'fields';
+                toggleFieldsOptions();
+            }
+        }
+    }
+
+    generateCommand();
+    hideKnowledgeDetail();
+
+    // 切换到过滤器Tab
+    document.querySelector('[data-tab="filters"]').click();
+    showToast('已应用知识库过滤器');
+}
+
+function bindKnowledgeEvents() {
+    // 分类按钮
+    if (elements.knowledgeCategories) {
+        elements.knowledgeCategories.addEventListener('click', (e) => {
+            const btn = e.target.closest('.category-btn');
+            if (!btn) return;
+
+            elements.knowledgeCategories.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            knowledgeActiveCategory = btn.dataset.category;
+            renderKnowledgeEntries(elements.knowledgeSearch?.value || '');
+        });
+    }
+
+    // 搜索框
+    if (elements.knowledgeSearch) {
+        let searchTimeout;
+        elements.knowledgeSearch.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                renderKnowledgeEntries(e.target.value);
+            }, 200);
+        });
+    }
+
+    // 知识卡片点击
+    if (elements.knowledgeList) {
+        elements.knowledgeList.addEventListener('click', (e) => {
+            const card = e.target.closest('.knowledge-card');
+            if (card) {
+                showKnowledgeDetail(card.dataset.id);
+            }
+        });
+    }
+
+    // 关闭详情面板
+    if (elements.closeDetail) {
+        elements.closeDetail.addEventListener('click', hideKnowledgeDetail);
+    }
+
+    // 应用过滤器
+    if (elements.applyKnowledge) {
+        elements.applyKnowledge.addEventListener('click', applyKnowledgeFilter);
+    }
+}
+
+// 在init后调用
+setTimeout(initKnowledgeBase, 100);

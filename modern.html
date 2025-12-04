@@ -77,6 +77,14 @@
                     </svg>
                     高级选项
                 </button>
+                <button class="nav-item" data-tab="knowledge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    知识库
+                </button>
             </div>
 
             <div class="nav-footer">
@@ -593,6 +601,55 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Knowledge Base Tab -->
+            <section id="knowledge" class="tab-content">
+                <div class="section-header">
+                    <h2>📚 CTF流量分析知识库</h2>
+                    <p>涵盖CTF和电子取证流量分析的完整题型分类与解题指南</p>
+                </div>
+
+                <div class="knowledge-search">
+                    <input type="text" id="knowledgeSearch" class="modern-input" placeholder="搜索知识条目...">
+                </div>
+
+                <div class="knowledge-categories" id="knowledgeCategories">
+                    <!-- 动态生成分类按钮 -->
+                </div>
+
+                <div class="knowledge-list" id="knowledgeList">
+                    <!-- 动态生成知识条目 -->
+                </div>
+
+                <!-- 知识详情模态框 -->
+                <div id="knowledgeDetail" class="knowledge-detail hidden">
+                    <div class="detail-header">
+                        <h3 id="detailTitle">条目标题</h3>
+                        <button id="closeDetail" class="icon-btn">×</button>
+                    </div>
+                    <div class="detail-body">
+                        <div class="detail-section">
+                            <h4>📝 描述</h4>
+                            <p id="detailDesc"></p>
+                        </div>
+                        <div class="detail-section">
+                            <h4>🔍 TShark过滤器</h4>
+                            <code id="detailFilter" class="filter-code"></code>
+                        </div>
+                        <div class="detail-section">
+                            <h4>💡 解题技巧</h4>
+                            <ul id="detailTips"></ul>
+                        </div>
+                        <div class="detail-section">
+                            <h4>⌨️ 常用命令</h4>
+                            <div id="detailCommands"></div>
+                        </div>
+                    </div>
+                    <div class="detail-footer">
+                        <button id="applyKnowledge" class="action-btn primary">应用此过滤器</button>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <!-- Bottom Command Bar -->
@@ -730,6 +787,7 @@
         </div>
     </div>
 
+    <script src="knowledge.js"></script>
     <script src="modern.js"></script>
 </body>
 
