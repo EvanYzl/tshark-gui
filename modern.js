@@ -387,6 +387,71 @@ const scenarios = {
             quiet: true,
             statistics: ['conv,tcp']
         }
+    },
+
+    // === 九、加密Webshell检测 ===
+    behinder: {
+        name: '冰蝎检测',
+        category: 'webshell',
+        config: {
+            customFilter: 'http.request.method == "POST" && http.content_type contains "application/x-www-form-urlencoded" && http.content_length > 500',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'http.host', 'http.request.uri', 'http.content_length']
+        }
+    },
+    godzilla: {
+        name: '哥斯拉检测',
+        category: 'webshell',
+        config: {
+            customFilter: 'http.request.method == "POST" && (http.request.uri contains ".php" || http.request.uri contains ".jsp" || http.request.uri contains ".aspx")',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'http.host', 'http.request.uri', 'http.content_length', 'http.response.code']
+        }
+    },
+    antsword: {
+        name: '蚁剑检测',
+        category: 'webshell',
+        config: {
+            customFilter: 'http.request.method == "POST" && http contains "@ini_set"',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'http.host', 'http.request.uri', 'http.file_data']
+        }
+    },
+    shellPHP: {
+        name: 'PHP一句话',
+        category: 'webshell',
+        config: {
+            customFilter: 'http contains "eval" || http contains "assert" || http contains "base64_decode" || http contains "system("',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'http.request.uri', 'http.file_data']
+        }
+    },
+    shellJSP: {
+        name: 'JSP马检测',
+        category: 'webshell',
+        config: {
+            customFilter: 'http.request.uri contains ".jsp" && http.request.method == "POST"',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'http.request.uri', 'http.content_length']
+        }
+    },
+    shellASP: {
+        name: 'ASP马检测',
+        category: 'webshell',
+        config: {
+            customFilter: '(http.request.uri contains ".asp" || http.request.uri contains ".aspx") && http.request.method == "POST"',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'http.request.uri', 'http.content_length']
+        }
+    },
+    cobaltstrike: {
+        name: 'CobaltStrike',
+        category: 'webshell',
+        config: {
+            customFilter: 'http.request.uri matches "^/[a-zA-Z]{4}$" || http.cookie contains "SESSIONID"',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'http.host', 'http.request.uri', 'http.cookie']
+        }
     }
 };
 
