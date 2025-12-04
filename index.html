@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TShark 命令生成器 - 流量取证分析工具</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
     <div class="app-container">
         <!-- Header -->
@@ -30,6 +34,10 @@
                 <section class="card">
                     <h2 class="card-title">📁 输入源</h2>
                     <div class="card-content">
+                        <div class="input-group">
+                            <label>TShark 路径 <span class="hint">(Windows用户请填写完整路径)</span>:</label>
+                            <input type="text" id="tsharkPath" placeholder="tshark" value="tshark">
+                        </div>
                         <div class="radio-group">
                             <label class="radio-label">
                                 <input type="radio" name="inputSource" value="file" checked>
@@ -164,64 +172,91 @@
                                 <span>XML</span>
                             </label>
                         </div>
-                        
+
                         <div id="fieldsOptions" class="fields-options hidden">
                             <h4>选择输出字段 (-e):</h4>
                             <div class="fields-category">
                                 <span class="category-label">通用:</span>
                                 <div class="field-btns">
-                                    <label class="field-label"><input type="checkbox" value="frame.number"><span>帧号</span></label>
-                                    <label class="field-label"><input type="checkbox" value="frame.time"><span>时间</span></label>
-                                    <label class="field-label"><input type="checkbox" value="frame.len"><span>长度</span></label>
-                                    <label class="field-label"><input type="checkbox" value="frame.protocols"><span>协议栈</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="frame.number"><span>帧号</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="frame.time"><span>时间</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="frame.len"><span>长度</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="frame.protocols"><span>协议栈</span></label>
                                 </div>
                             </div>
                             <div class="fields-category">
                                 <span class="category-label">网络层:</span>
                                 <div class="field-btns">
-                                    <label class="field-label"><input type="checkbox" value="ip.src"><span>源IP</span></label>
-                                    <label class="field-label"><input type="checkbox" value="ip.dst"><span>目标IP</span></label>
-                                    <label class="field-label"><input type="checkbox" value="ip.proto"><span>协议号</span></label>
-                                    <label class="field-label"><input type="checkbox" value="ip.ttl"><span>TTL</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="ip.src"><span>源IP</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="ip.dst"><span>目标IP</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="ip.proto"><span>协议号</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="ip.ttl"><span>TTL</span></label>
                                 </div>
                             </div>
                             <div class="fields-category">
                                 <span class="category-label">传输层:</span>
                                 <div class="field-btns">
-                                    <label class="field-label"><input type="checkbox" value="tcp.srcport"><span>TCP源端口</span></label>
-                                    <label class="field-label"><input type="checkbox" value="tcp.dstport"><span>TCP目标端口</span></label>
-                                    <label class="field-label"><input type="checkbox" value="tcp.flags"><span>TCP标志</span></label>
-                                    <label class="field-label"><input type="checkbox" value="udp.srcport"><span>UDP源端口</span></label>
-                                    <label class="field-label"><input type="checkbox" value="udp.dstport"><span>UDP目标端口</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="tcp.srcport"><span>TCP源端口</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="tcp.dstport"><span>TCP目标端口</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="tcp.flags"><span>TCP标志</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="udp.srcport"><span>UDP源端口</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="udp.dstport"><span>UDP目标端口</span></label>
                                 </div>
                             </div>
                             <div class="fields-category">
                                 <span class="category-label">HTTP:</span>
                                 <div class="field-btns">
-                                    <label class="field-label"><input type="checkbox" value="http.host"><span>Host</span></label>
-                                    <label class="field-label"><input type="checkbox" value="http.request.uri"><span>URI</span></label>
-                                    <label class="field-label"><input type="checkbox" value="http.request.method"><span>方法</span></label>
-                                    <label class="field-label"><input type="checkbox" value="http.user_agent"><span>UA</span></label>
-                                    <label class="field-label"><input type="checkbox" value="http.cookie"><span>Cookie</span></label>
-                                    <label class="field-label"><input type="checkbox" value="http.response.code"><span>状态码</span></label>
-                                    <label class="field-label"><input type="checkbox" value="http.content_type"><span>Content-Type</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="http.host"><span>Host</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="http.request.uri"><span>URI</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="http.request.method"><span>方法</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="http.user_agent"><span>UA</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="http.cookie"><span>Cookie</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="http.response.code"><span>状态码</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="http.content_type"><span>Content-Type</span></label>
                                 </div>
                             </div>
                             <div class="fields-category">
                                 <span class="category-label">DNS:</span>
                                 <div class="field-btns">
-                                    <label class="field-label"><input type="checkbox" value="dns.qry.name"><span>查询域名</span></label>
-                                    <label class="field-label"><input type="checkbox" value="dns.resp.name"><span>响应域名</span></label>
-                                    <label class="field-label"><input type="checkbox" value="dns.a"><span>A记录</span></label>
-                                    <label class="field-label"><input type="checkbox" value="dns.qry.type"><span>查询类型</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="dns.qry.name"><span>查询域名</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="dns.resp.name"><span>响应域名</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="dns.a"><span>A记录</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="dns.qry.type"><span>查询类型</span></label>
                                 </div>
                             </div>
                             <div class="fields-category">
                                 <span class="category-label">凭据:</span>
                                 <div class="field-btns">
-                                    <label class="field-label"><input type="checkbox" value="ftp.request.command"><span>FTP命令</span></label>
-                                    <label class="field-label"><input type="checkbox" value="ftp.request.arg"><span>FTP参数</span></label>
-                                    <label class="field-label"><input type="checkbox" value="smtp.req.parameter"><span>SMTP参数</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="ftp.request.command"><span>FTP命令</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="ftp.request.arg"><span>FTP参数</span></label>
+                                    <label class="field-label"><input type="checkbox"
+                                            value="smtp.req.parameter"><span>SMTP参数</span></label>
                                 </div>
                             </div>
                             <div class="input-group">
@@ -365,4 +400,5 @@
 
     <script src="app.js"></script>
 </body>
+
 </html>
