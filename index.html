@@ -4,457 +4,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TShark 命令生成器 - 流量取证分析工具</title>
-    <link rel="stylesheet" href="style.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-        rel="stylesheet">
+    <title>TShark 命令生成器 - 选择版本</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #e6edf3;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --accent-classic: #58a6ff;
+            --accent-modern: #a371f7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 1000px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, #8b949e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        p.subtitle {
+            color: #8b949e;
+            font-size: 1.2rem;
+            margin-bottom: 4rem;
+        }
+
+        .cards {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+            width: 320px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent-color);
+            transition: height 0.3s ease;
+            z-index: 0;
+        }
+
+        .card:hover::before {
+            height: 100%;
+            opacity: 0.1;
+        }
+
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            z-index: 1;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            z-index: 1;
+        }
+
+        .card p {
+            color: #8b949e;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            z-index: 1;
+        }
+
+        .classic {
+            --accent-color: var(--accent-classic);
+        }
+
+        .modern {
+            --accent-color: var(--accent-modern);
+        }
+
+        .badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--accent-color);
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="app-container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-left">
-                <span class="logo">🦈</span>
-                <h1>TShark 命令生成器</h1>
-                <span class="subtitle">流量取证分析工具</span>
-            </div>
-            <div class="header-right">
-                <button id="aiAssistant" class="icon-btn ai-btn" title="AI 助手">🤖</button>
-                <button id="themeToggle" class="icon-btn" title="切换主题">🌙</button>
-                <button id="resetAll" class="icon-btn" title="重置所有选项">🔄</button>
-            </div>
-        </header>
+    <div class="container">
+        <h1>TShark 命令生成器</h1>
+        <p class="subtitle">选择你喜欢的界面风格</p>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Left Panel -->
-            <div class="left-panel">
-                <!-- Input Source -->
-                <section class="card">
-                    <h2 class="card-title">📁 输入源</h2>
-                    <div class="card-content">
-                        <div class="input-group">
-                            <label>TShark 路径 <span class="hint">(Windows用户请填写完整路径)</span>:</label>
-                            <input type="text" id="tsharkPath" placeholder="tshark" value="tshark">
-                        </div>
-                        <div class="radio-group">
-                            <label class="radio-label">
-                                <input type="radio" name="inputSource" value="file" checked>
-                                <span>读取文件 (-r)</span>
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="inputSource" value="interface">
-                                <span>实时捕获 (-i)</span>
-                            </label>
-                        </div>
-                        <div class="input-group" id="fileInputGroup">
-                            <label>文件路径:</label>
-                            <input type="text" id="inputFile" placeholder="capture.pcap" value="capture.pcap">
-                        </div>
-                        <div class="input-group hidden" id="interfaceInputGroup">
-                            <label>网络接口:</label>
-                            <input type="text" id="inputInterface" placeholder="eth0">
-                        </div>
-                        <div class="checkbox-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="promiscuous">
-                                <span>禁用混杂模式 (-p)</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="monitor">
-                                <span>监控模式 (-I)</span>
-                            </label>
-                        </div>
-                    </div>
-                </section>
+        <div class="cards">
+            <a href="classic.html" class="card classic">
+                <div class="icon">🛠️</div>
+                <h2>经典版</h2>
+                <p>实用主义风格，高信息密度，适合快速操作和老用户。</p>
+            </a>
 
-                <!-- Quick Scenarios -->
-                <section class="card">
-                    <h2 class="card-title">🎯 快捷场景</h2>
-                    <div class="card-content">
-                        <div class="scenario-grid">
-                            <button class="scenario-btn" data-scenario="protocol">📊 协议分布</button>
-                            <button class="scenario-btn" data-scenario="ipconv">🔗 IP通信对</button>
-                            <button class="scenario-btn" data-scenario="http">🌐 HTTP请求</button>
-                            <button class="scenario-btn" data-scenario="dns">🔍 DNS查询</button>
-                            <button class="scenario-btn" data-scenario="credentials">🔑 提取凭据</button>
-                            <button class="scenario-btn" data-scenario="useragent">🖥️ User-Agent</button>
-                            <button class="scenario-btn" data-scenario="cookies">🍪 Cookies</button>
-                            <button class="scenario-btn" data-scenario="post">📤 POST数据</button>
-                            <button class="scenario-btn" data-scenario="tcpstream">🔄 TCP流追踪</button>
-                            <button class="scenario-btn" data-scenario="suspicious">⚠️ 可疑流量</button>
-                            <button class="scenario-btn" data-scenario="timeline">📈 时间线</button>
-                            <button class="scenario-btn" data-scenario="expert">🔬 专家分析</button>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Display Filter -->
-                <section class="card">
-                    <h2 class="card-title">🔍 显示过滤器 (-Y)</h2>
-                    <div class="card-content">
-                        <div class="filter-protocols">
-                            <span class="filter-label">协议:</span>
-                            <div class="protocol-btns">
-                                <button class="proto-btn" data-filter="http">HTTP</button>
-                                <button class="proto-btn" data-filter="dns">DNS</button>
-                                <button class="proto-btn" data-filter="ftp">FTP</button>
-                                <button class="proto-btn" data-filter="smtp">SMTP</button>
-                                <button class="proto-btn" data-filter="tcp">TCP</button>
-                                <button class="proto-btn" data-filter="udp">UDP</button>
-                                <button class="proto-btn" data-filter="icmp">ICMP</button>
-                                <button class="proto-btn" data-filter="tls">TLS</button>
-                                <button class="proto-btn" data-filter="ssh">SSH</button>
-                                <button class="proto-btn" data-filter="smb">SMB</button>
-                                <button class="proto-btn" data-filter="arp">ARP</button>
-                                <button class="proto-btn" data-filter="dhcp">DHCP</button>
-                            </div>
-                        </div>
-                        <div class="filter-inputs">
-                            <div class="input-row">
-                                <div class="input-group">
-                                    <label>源IP:</label>
-                                    <input type="text" id="srcIp" placeholder="192.168.1.1">
-                                </div>
-                                <div class="input-group">
-                                    <label>目标IP:</label>
-                                    <input type="text" id="dstIp" placeholder="10.0.0.1">
-                                </div>
-                            </div>
-                            <div class="input-row">
-                                <div class="input-group">
-                                    <label>端口:</label>
-                                    <input type="text" id="port" placeholder="80">
-                                </div>
-                                <div class="input-group">
-                                    <label>包含关键词:</label>
-                                    <input type="text" id="containsKeyword" placeholder="flag, password">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <label>自定义过滤器:</label>
-                            <input type="text" id="customFilter" placeholder='http.request.method == "POST"'>
-                        </div>
-                        <div class="filter-logic">
-                            <span>逻辑运算:</span>
-                            <select id="filterLogic">
-                                <option value="and">AND</option>
-                                <option value="or">OR</option>
-                            </select>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Right Panel -->
-            <div class="right-panel">
-                <!-- Output Format -->
-                <section class="card">
-                    <h2 class="card-title">📤 输出格式</h2>
-                    <div class="card-content">
-                        <div class="radio-group horizontal">
-                            <label class="radio-label">
-                                <input type="radio" name="outputFormat" value="default" checked>
-                                <span>默认</span>
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="outputFormat" value="fields">
-                                <span>字段 (-T fields)</span>
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="outputFormat" value="json">
-                                <span>JSON</span>
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="outputFormat" value="pdml">
-                                <span>XML</span>
-                            </label>
-                        </div>
-
-                        <div id="fieldsOptions" class="fields-options hidden">
-                            <h4>选择输出字段 (-e):</h4>
-                            <div class="fields-category">
-                                <span class="category-label">通用:</span>
-                                <div class="field-btns">
-                                    <label class="field-label"><input type="checkbox"
-                                            value="frame.number"><span>帧号</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="frame.time"><span>时间</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="frame.len"><span>长度</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="frame.protocols"><span>协议栈</span></label>
-                                </div>
-                            </div>
-                            <div class="fields-category">
-                                <span class="category-label">网络层:</span>
-                                <div class="field-btns">
-                                    <label class="field-label"><input type="checkbox"
-                                            value="ip.src"><span>源IP</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="ip.dst"><span>目标IP</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="ip.proto"><span>协议号</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="ip.ttl"><span>TTL</span></label>
-                                </div>
-                            </div>
-                            <div class="fields-category">
-                                <span class="category-label">传输层:</span>
-                                <div class="field-btns">
-                                    <label class="field-label"><input type="checkbox"
-                                            value="tcp.srcport"><span>TCP源端口</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="tcp.dstport"><span>TCP目标端口</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="tcp.flags"><span>TCP标志</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="udp.srcport"><span>UDP源端口</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="udp.dstport"><span>UDP目标端口</span></label>
-                                </div>
-                            </div>
-                            <div class="fields-category">
-                                <span class="category-label">HTTP:</span>
-                                <div class="field-btns">
-                                    <label class="field-label"><input type="checkbox"
-                                            value="http.host"><span>Host</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="http.request.uri"><span>URI</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="http.request.method"><span>方法</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="http.user_agent"><span>UA</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="http.cookie"><span>Cookie</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="http.response.code"><span>状态码</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="http.content_type"><span>Content-Type</span></label>
-                                </div>
-                            </div>
-                            <div class="fields-category">
-                                <span class="category-label">DNS:</span>
-                                <div class="field-btns">
-                                    <label class="field-label"><input type="checkbox"
-                                            value="dns.qry.name"><span>查询域名</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="dns.resp.name"><span>响应域名</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="dns.a"><span>A记录</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="dns.qry.type"><span>查询类型</span></label>
-                                </div>
-                            </div>
-                            <div class="fields-category">
-                                <span class="category-label">凭据:</span>
-                                <div class="field-btns">
-                                    <label class="field-label"><input type="checkbox"
-                                            value="ftp.request.command"><span>FTP命令</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="ftp.request.arg"><span>FTP参数</span></label>
-                                    <label class="field-label"><input type="checkbox"
-                                            value="smtp.req.parameter"><span>SMTP参数</span></label>
-                                </div>
-                            </div>
-                            <div class="input-group">
-                                <label>自定义字段:</label>
-                                <input type="text" id="customField" placeholder="输入字段名后按回车添加">
-                            </div>
-                            <div class="format-options">
-                                <div class="input-group small">
-                                    <label>分隔符:</label>
-                                    <select id="separator">
-                                        <option value=",">,（逗号）</option>
-                                        <option value="\t">Tab</option>
-                                        <option value="|">|（管道）</option>
-                                        <option value=" ">空格</option>
-                                    </select>
-                                </div>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="includeHeader" checked>
-                                    <span>包含标题行</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="checkbox-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="verbose">
-                                <span>详细输出 (-V)</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="quiet">
-                                <span>静默模式 (-q)</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="noResolve">
-                                <span>禁用名称解析 (-n)</span>
-                            </label>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Statistics -->
-                <section class="card">
-                    <h2 class="card-title">📊 统计分析 (-z)</h2>
-                    <div class="card-content">
-                        <div class="stats-grid">
-                            <label class="checkbox-label">
-                                <input type="checkbox" class="stat-option" value="io,phs">
-                                <span>协议层级</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" class="stat-option" value="conv,ip">
-                                <span>IP会话</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" class="stat-option" value="conv,tcp">
-                                <span>TCP会话</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" class="stat-option" value="conv,udp">
-                                <span>UDP会话</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" class="stat-option" value="endpoints,ip">
-                                <span>IP端点</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" class="stat-option" value="endpoints,tcp">
-                                <span>TCP端点</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" class="stat-option" value="http,tree">
-                                <span>HTTP统计</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" class="stat-option" value="dns,tree">
-                                <span>DNS统计</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" class="stat-option" value="expert">
-                                <span>专家信息</span>
-                            </label>
-                        </div>
-                        <div class="input-row">
-                            <div class="input-group">
-                                <label>追踪TCP流:</label>
-                                <input type="number" id="tcpStream" placeholder="流ID (0,1,2...)">
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Advanced Options -->
-                <section class="card">
-                    <h2 class="card-title">⚙️ 高级选项</h2>
-                    <div class="card-content">
-                        <div class="checkbox-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="twoPass">
-                                <span>两遍分析 (-2)</span>
-                            </label>
-                        </div>
-                        <div class="input-row">
-                            <div class="input-group">
-                                <label>限制包数 (-c):</label>
-                                <input type="number" id="packetCount" placeholder="100">
-                            </div>
-                            <div class="input-group">
-                                <label>输出文件 (-w):</label>
-                                <input type="text" id="outputFile" placeholder="output.pcap">
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <label>Decode As (-d):</label>
-                            <input type="text" id="decodeAs" placeholder="tcp.port==8080,http">
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </main>
-
-        <!-- Command Output -->
-        <section class="command-section">
-            <div class="command-header">
-                <h2>生成的命令</h2>
-                <div class="command-actions">
-                    <button id="copyCmd" class="action-btn primary">📋 复制命令</button>
-                    <button id="downloadScript" class="action-btn">💾 下载脚本</button>
-                </div>
-            </div>
-            <div class="command-output">
-                <code id="commandOutput">tshark -r capture.pcap</code>
-            </div>
-            <div id="copyToast" class="toast">✓ 命令已复制到剪贴板</div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <p>TShark 命令生成器 v1.0 | 电子取证 & CTF 流量分析辅助工具</p>
-        </footer>
-    </div>
-
-    <!-- AI Assistant Modal -->
-    <div id="aiModal" class="modal hidden">
-        <div class="modal-overlay"></div>
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3>🤖 AI 助手</h3>
-                <button id="aiSettingsBtn" class="icon-btn small" title="API 设置">⚙️</button>
-                <button id="closeAiModal" class="icon-btn small" title="关闭">✕</button>
-            </div>
-
-            <!-- API Settings Panel -->
-            <div id="aiSettings" class="ai-settings hidden">
-                <div class="input-group">
-                    <label>API Base URL:</label>
-                    <input type="text" id="apiBaseUrl" placeholder="https://api.openai.com/v1">
-                </div>
-                <div class="input-group">
-                    <label>API Key:</label>
-                    <input type="password" id="apiKey" placeholder="sk-...">
-                </div>
-                <div class="input-group">
-                    <label>模型:</label>
-                    <input type="text" id="apiModel" placeholder="gpt-4" value="gpt-4">
-                </div>
-                <button id="saveApiSettings" class="action-btn primary small">💾 保存设置</button>
-            </div>
-
-            <!-- Chat Area -->
-            <div class="chat-container">
-                <div id="chatMessages" class="chat-messages">
-                    <div class="chat-message assistant">
-                        <div class="message-content">
-                            👋 你好！我是流量分析助手。请描述你的取证题目或分析需求，我会帮你生成对应的 tshark 命令。
-                            <br><br>
-                            <strong>示例问题：</strong>
-                            <ul>
-                                <li>找出流量包中黑客访问的恶意URL</li>
-                                <li>提取所有DNS查询记录</li>
-                                <li>分析HTTP POST请求中的敏感数据</li>
-                                <li>追踪某个IP的所有通信</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="chat-input-area">
-                    <textarea id="chatInput" placeholder="描述你的题目或分析需求..." rows="3"></textarea>
-                    <button id="sendMessage" class="action-btn primary">
-                        <span id="sendBtnText">发送</span>
-                        <span id="sendBtnLoading" class="hidden">⏳</span>
-                    </button>
-                </div>
-            </div>
+            <a href="modern.html" class="card modern">
+                <span class="badge">NEW</span>
+                <div class="icon">✨</div>
+                <h2>现代版</h2>
+                <p>全新 Glassmorphism 设计，沉浸式体验，更美观的交互。</p>
+            </a>
         </div>
     </div>
-
-    <script src="app.js"></script>
 </body>
 
 </html>
