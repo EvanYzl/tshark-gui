@@ -21,6 +21,7 @@
                 <span class="subtitle">流量取证分析工具</span>
             </div>
             <div class="header-right">
+                <button id="aiAssistant" class="icon-btn ai-btn" title="AI 助手">🤖</button>
                 <button id="themeToggle" class="icon-btn" title="切换主题">🌙</button>
                 <button id="resetAll" class="icon-btn" title="重置所有选项">🔄</button>
             </div>
@@ -396,6 +397,61 @@
         <footer class="footer">
             <p>TShark 命令生成器 v1.0 | 电子取证 & CTF 流量分析辅助工具</p>
         </footer>
+    </div>
+
+    <!-- AI Assistant Modal -->
+    <div id="aiModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>🤖 AI 助手</h3>
+                <button id="aiSettingsBtn" class="icon-btn small" title="API 设置">⚙️</button>
+                <button id="closeAiModal" class="icon-btn small" title="关闭">✕</button>
+            </div>
+
+            <!-- API Settings Panel -->
+            <div id="aiSettings" class="ai-settings hidden">
+                <div class="input-group">
+                    <label>API Base URL:</label>
+                    <input type="text" id="apiBaseUrl" placeholder="https://api.openai.com/v1">
+                </div>
+                <div class="input-group">
+                    <label>API Key:</label>
+                    <input type="password" id="apiKey" placeholder="sk-...">
+                </div>
+                <div class="input-group">
+                    <label>模型:</label>
+                    <input type="text" id="apiModel" placeholder="gpt-4" value="gpt-4">
+                </div>
+                <button id="saveApiSettings" class="action-btn primary small">💾 保存设置</button>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-container">
+                <div id="chatMessages" class="chat-messages">
+                    <div class="chat-message assistant">
+                        <div class="message-content">
+                            👋 你好！我是流量分析助手。请描述你的取证题目或分析需求，我会帮你生成对应的 tshark 命令。
+                            <br><br>
+                            <strong>示例问题：</strong>
+                            <ul>
+                                <li>找出流量包中黑客访问的恶意URL</li>
+                                <li>提取所有DNS查询记录</li>
+                                <li>分析HTTP POST请求中的敏感数据</li>
+                                <li>追踪某个IP的所有通信</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <textarea id="chatInput" placeholder="描述你的题目或分析需求..." rows="3"></textarea>
+                    <button id="sendMessage" class="action-btn primary">
+                        <span id="sendBtnText">发送</span>
+                        <span id="sendBtnLoading" class="hidden">⏳</span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>

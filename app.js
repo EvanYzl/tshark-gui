@@ -773,3 +773,230 @@ function toggleTheme() {
 function updateThemeIcon(theme) {
     elements.themeToggle.textContent = theme === 'dark' ? '🌙' : '☀️';
 }
+
+// ===== AI Assistant =====
+const aiState = {
+    apiBaseUrl: 'https://api.openai.com/v1',
+    apiKey: '',
+    model: 'gpt-4',
+    isLoading: false
+};
+
+const aiElements = {};
+
+function initAI() {
+    // Cache AI elements
+    aiElements.modal = document.getElementById('aiModal');
+    aiElements.overlay = aiElements.modal.querySelector('.modal-overlay');
+    aiElements.openBtn = document.getElementById('aiAssistant');
+    aiElements.closeBtn = document.getElementById('closeAiModal');
+    aiElements.settingsBtn = document.getElementById('aiSettingsBtn');
+    aiElements.settingsPanel = document.getElementById('aiSettings');
+    aiElements.saveSettingsBtn = document.getElementById('saveApiSettings');
+    aiElements.apiBaseUrl = document.getElementById('apiBaseUrl');
+    aiElements.apiKey = document.getElementById('apiKey');
+    aiElements.apiModel = document.getElementById('apiModel');
+    aiElements.chatMessages = document.getElementById('chatMessages');
+    aiElements.chatInput = document.getElementById('chatInput');
+    aiElements.sendBtn = document.getElementById('sendMessage');
+    aiElements.sendBtnText = document.getElementById('sendBtnText');
+    aiElements.sendBtnLoading = document.getElementById('sendBtnLoading');
+
+    // Load saved settings
+    loadAISettings();
+
+    // Bind events
+    aiElements.openBtn.addEventListener('click', openAIModal);
+    aiElements.closeBtn.addEventListener('click', closeAIModal);
+    aiElements.overlay.addEventListener('click', closeAIModal);
+    aiElements.settingsBtn.addEventListener('click', toggleSettings);
+    aiElements.saveSettingsBtn.addEventListener('click', saveAISettings);
+    aiElements.sendBtn.addEventListener('click', sendMessage);
+    aiElements.chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+}
+
+function loadAISettings() {
+    const saved = localStorage.getItem('tshark-ai-settings');
+    if (saved) {
+        try {
+            const settings = JSON.parse(saved);
+            aiState.apiBaseUrl = settings.apiBaseUrl || 'https://api.openai.com/v1';
+            aiState.apiKey = settings.apiKey || '';
+            aiState.model = settings.model || 'gpt-4';
+
+            aiElements.apiBaseUrl.value = aiState.apiBaseUrl;
+            aiElements.apiKey.value = aiState.apiKey;
+            aiElements.apiModel.value = aiState.model;
+        } catch (e) {
+            console.error('Failed to load AI settings:', e);
+        }
+    }
+}
+
+function saveAISettings() {
+    aiState.apiBaseUrl = aiElements.apiBaseUrl.value.trim() || 'https://api.openai.com/v1';
+    aiState.apiKey = aiElements.apiKey.value.trim();
+    aiState.model = aiElements.apiModel.value.trim() || 'gpt-4';
+
+    localStorage.setItem('tshark-ai-settings', JSON.stringify({
+        apiBaseUrl: aiState.apiBaseUrl,
+        apiKey: aiState.apiKey,
+        model: aiState.model
+    }));
+
+    toggleSettings();
+    showToast();
+}
+
+function openAIModal() {
+    aiElements.modal.classList.remove('hidden');
+    aiElements.chatInput.focus();
+}
+
+function closeAIModal() {
+    aiElements.modal.classList.add('hidden');
+}
+
+function toggleSettings() {
+    aiElements.settingsPanel.classList.toggle('hidden');
+}
+
+async function sendMessage() {
+    const message = aiElements.chatInput.value.trim();
+    if (!message || aiState.isLoading) return;
+
+    if (!aiState.apiKey) {
+        addMessage('assistant', '⚠️ 请先点击右上角的 ⚙️ 按钮配置 API Key。');
+        toggleSettings();
+        return;
+    }
+
+    // Add user message
+    addMessage('user', message);
+    aiElements.chatInput.value = '';
+
+    // Show loading
+    setLoading(true);
+
+    try {
+        const response = await callGPT(message);
+        addMessage('assistant', response);
+    } catch (error) {
+        console.error('API Error:', error);
+        addMessage('assistant', `❌ API 调用失败: ${error.message}\n\n请检查 API Key 和 Base URL 是否正确。`);
+    } finally {
+        setLoading(false);
+    }
+}
+
+function addMessage(role, content) {
+    const div = document.createElement('div');
+    div.className = `chat-message ${role}`;
+
+    // Parse content for command blocks
+    const formattedContent = formatMessageContent(content);
+
+    div.innerHTML = `<div class="message-content">${formattedContent}</div>`;
+
+    aiElements.chatMessages.appendChild(div);
+    aiElements.chatMessages.scrollTop = aiElements.chatMessages.scrollHeight;
+
+    // Bind copy buttons
+    div.querySelectorAll('.copy-cmd-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const code = btn.parentElement.querySelector('code').textContent;
+            navigator.clipboard.writeText(code);
+            btn.textContent = '✓ 已复制';
+            setTimeout(() => btn.textContent = '复制', 1500);
+        });
+    });
+}
+
+function formatMessageContent(content) {
+    // Escape HTML
+    let formatted = content
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+    // Convert markdown code blocks to command blocks
+    formatted = formatted.replace(/```(\w*)\n?([\s\S]*?)```/g, (match, lang, code) => {
+        const trimmedCode = code.trim();
+        if (lang === 'bash' || lang === 'shell' || lang === '' || trimmedCode.startsWith('tshark')) {
+            return `<div class="command-block"><button class="copy-cmd-btn">复制</button><code>${trimmedCode}</code></div>`;
+        }
+        return `<pre><code>${trimmedCode}</code></pre>`;
+    });
+
+    // Convert inline code
+    formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    // Convert newlines
+    formatted = formatted.replace(/\n/g, '<br>');
+
+    return formatted;
+}
+
+function setLoading(loading) {
+    aiState.isLoading = loading;
+    aiElements.sendBtn.disabled = loading;
+    aiElements.sendBtnText.classList.toggle('hidden', loading);
+    aiElements.sendBtnLoading.classList.toggle('hidden', !loading);
+}
+
+async function callGPT(userMessage) {
+    const systemPrompt = `你是一个专业的网络流量分析和电子取证专家。用户会描述他们的流量分析题目或需求，你需要帮助他们生成正确的 tshark 命令。
+
+你的回复应该：
+1. 简要分析用户的需求
+2. 给出一个或多个 tshark 命令，使用 \`\`\`bash 代码块格式
+3. 简要解释命令的作用
+4. 如果需要多步分析，按步骤给出命令
+
+当前用户的 tshark 路径配置为: ${state.tsharkPath}
+当前用户的 pcap 文件路径为: ${state.inputFile}
+
+常用的 tshark 参数：
+- -r <file>: 读取 pcap 文件
+- -Y <filter>: 显示过滤器
+- -T fields -e <field>: 提取特定字段
+- -q -z <stat>: 统计分析
+- -z follow,tcp,ascii,<stream>: 追踪 TCP 流
+
+请用中文回复。`;
+
+    const url = `${aiState.apiBaseUrl}/chat/completions`;
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${aiState.apiKey}`
+        },
+        body: JSON.stringify({
+            model: aiState.model,
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userMessage }
+            ],
+            temperature: 0.7,
+            max_tokens: 2000
+        })
+    });
+
+    if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error?.message || `HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content;
+}
+
+// Initialize AI on page load
+document.addEventListener('DOMContentLoaded', initAI);
