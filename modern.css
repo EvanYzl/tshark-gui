@@ -634,6 +634,77 @@ body {
     border-color: var(--danger);
 }
 
+.action-btn.run {
+    background: var(--success);
+    color: white;
+}
+
+.action-btn.run:hover {
+    background: #059669;
+}
+
+.action-btn.run:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
+/* Result Modal */
+.result-modal {
+    width: 90%;
+    max-width: 900px;
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.result-content {
+    flex: 1;
+    overflow: auto;
+    background: #1e293b;
+    padding: 16px;
+    margin: 0;
+}
+
+.result-content pre {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #e2e8f0;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.result-footer {
+    padding: 12px 24px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-badge.running {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.success {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
 /* Toast */
 .toast {
     position: fixed;

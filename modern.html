@@ -618,6 +618,13 @@
                     </svg>
                     脚本
                 </button>
+                <button id="runCmd" class="action-btn run">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    运行
+                </button>
                 <button id="resetAll" class="action-btn danger">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
                         stroke-linejoin="round">
@@ -693,6 +700,32 @@
                         <span id="sendBtnLoading" class="hidden">⏳</span>
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Run Result Modal -->
+    <div id="resultModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-container result-modal">
+            <div class="modal-header">
+                <h3 id="resultTitle">执行结果</h3>
+                <div class="modal-actions">
+                    <button id="closeResultModal" class="icon-btn" title="关闭">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="result-content">
+                <pre id="resultOutput">等待执行...</pre>
+            </div>
+            <div class="result-footer">
+                <span id="resultStatus" class="status-badge">就绪</span>
+                <button id="copyResult" class="action-btn secondary">复制结果</button>
             </div>
         </div>
     </div>

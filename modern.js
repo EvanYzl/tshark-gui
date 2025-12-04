@@ -538,6 +538,15 @@ function cacheElements() {
     elements.downloadScript = document.getElementById('downloadScript');
     elements.commandOutput = document.getElementById('commandOutput');
     elements.copyToast = document.getElementById('copyToast');
+
+    // Run command
+    elements.runCmd = document.getElementById('runCmd');
+    elements.resultModal = document.getElementById('resultModal');
+    elements.resultOutput = document.getElementById('resultOutput');
+    elements.resultStatus = document.getElementById('resultStatus');
+    elements.resultTitle = document.getElementById('resultTitle');
+    elements.closeResultModal = document.getElementById('closeResultModal');
+    elements.copyResult = document.getElementById('copyResult');
 }
 
 function bindEvents() {
@@ -703,6 +712,18 @@ function bindEvents() {
     elements.resetAll.addEventListener('click', resetAll);
     elements.copyCmd.addEventListener('click', copyCommand);
     elements.downloadScript.addEventListener('click', downloadScript);
+
+    // Run command
+    if (elements.runCmd) {
+        elements.runCmd.addEventListener('click', runCommand);
+    }
+    if (elements.closeResultModal) {
+        elements.closeResultModal.addEventListener('click', closeResultModal);
+        elements.resultModal.querySelector('.modal-overlay').addEventListener('click', closeResultModal);
+    }
+    if (elements.copyResult) {
+        elements.copyResult.addEventListener('click', copyResult);
+    }
 }
 
 // ===== UI Functions =====
@@ -856,6 +877,61 @@ function resetFiltersAndOptions() {
     elements.tcpStream.value = '';
 
     toggleFieldsOptions();
+}
+
+// ===== Run Command Functions =====
+const API_BASE = 'http://localhost:5000';
+
+async function runCommand() {
+    const command = state.generatedCommand;
+    if (!command) {
+        showToast('请先生成命令');
+        return;
+    }
+
+    // 显示结果模态框
+    elements.resultModal.classList.remove('hidden');
+    elements.resultOutput.textContent = '正在执行命令...\n\n' + command;
+    elements.resultStatus.textContent = '运行中';
+    elements.resultStatus.className = 'status-badge running';
+    elements.runCmd.disabled = true;
+
+    try {
+        const response = await fetch(`${API_BASE}/api/run`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ command })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            elements.resultOutput.textContent = result.output || '(无输出)';
+            elements.resultStatus.textContent = '完成';
+            elements.resultStatus.className = 'status-badge success';
+        } else {
+            elements.resultOutput.textContent = `错误: ${result.error}\n\n${result.output || ''}`;
+            elements.resultStatus.textContent = '失败';
+            elements.resultStatus.className = 'status-badge error';
+        }
+    } catch (err) {
+        elements.resultOutput.textContent = `连接失败: ${err.message}\n\n请确保后端服务已启动:\ncd backend && python server.py`;
+        elements.resultStatus.textContent = '连接失败';
+        elements.resultStatus.className = 'status-badge error';
+    } finally {
+        elements.runCmd.disabled = false;
+    }
+}
+
+function closeResultModal() {
+    elements.resultModal.classList.add('hidden');
+}
+
+function copyResult() {
+    const text = elements.resultOutput.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('结果已复制');
+    });
 }
 
 // ===== Command Generation =====
