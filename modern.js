@@ -37,48 +37,65 @@ const state = {
     decodeAs: ''
 };
 
-// ===== Scenario Presets =====
+// ===== Scenario Presets (CTF流量取证题型) =====
 const scenarios = {
+    // === 一、基础分析 ===
     protocol: {
         name: '协议分布',
-        config: {
-            quiet: true,
-            statistics: ['io,phs']
-        }
+        category: 'basic',
+        config: { quiet: true, statistics: ['io,phs'] }
     },
     ipconv: {
         name: 'IP通信对',
+        category: 'basic',
+        config: { quiet: true, statistics: ['conv,ip'] }
+    },
+    tcpconv: {
+        name: 'TCP会话',
+        category: 'basic',
+        config: { quiet: true, statistics: ['conv,tcp'] }
+    },
+    endpoints: {
+        name: '端点统计',
+        category: 'basic',
+        config: { quiet: true, statistics: ['endpoints,ip'] }
+    },
+    timeline: {
+        name: '时间线',
+        category: 'basic',
         config: {
-            quiet: true,
-            statistics: ['conv,ip']
+            outputFormat: 'fields',
+            selectedFields: ['frame.time', 'ip.src', 'ip.dst', 'frame.protocols', 'frame.len']
         }
     },
+    expert: {
+        name: '专家分析',
+        category: 'basic',
+        config: { quiet: true, statistics: ['expert'] }
+    },
+
+    // === 二、HTTP/Web分析 ===
     http: {
         name: 'HTTP请求',
+        category: 'web',
         config: {
             selectedProtocols: ['http.request'],
             outputFormat: 'fields',
             selectedFields: ['frame.number', 'ip.src', 'http.host', 'http.request.uri', 'http.request.method']
         }
     },
-    dns: {
-        name: 'DNS查询',
+    httpResponse: {
+        name: 'HTTP响应',
+        category: 'web',
         config: {
-            selectedProtocols: ['dns.qry.name'],
+            selectedProtocols: ['http.response'],
             outputFormat: 'fields',
-            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'dns.qry.name', 'dns.a']
-        }
-    },
-    credentials: {
-        name: '提取凭据',
-        config: {
-            customFilter: 'ftp.request.command == "USER" || ftp.request.command == "PASS" || http.authorization || http.cookie contains "session"',
-            outputFormat: 'fields',
-            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'ftp.request.command', 'ftp.request.arg']
+            selectedFields: ['frame.number', 'ip.src', 'http.response.code', 'http.content_type', 'http.content_length']
         }
     },
     useragent: {
         name: 'User-Agent',
+        category: 'web',
         config: {
             selectedProtocols: ['http.user_agent'],
             outputFormat: 'fields',
@@ -87,6 +104,7 @@ const scenarios = {
     },
     cookies: {
         name: 'Cookies',
+        category: 'web',
         config: {
             selectedProtocols: ['http.cookie'],
             outputFormat: 'fields',
@@ -95,39 +113,279 @@ const scenarios = {
     },
     post: {
         name: 'POST数据',
+        category: 'web',
         config: {
             customFilter: 'http.request.method == "POST"',
             outputFormat: 'fields',
             selectedFields: ['frame.number', 'ip.src', 'http.host', 'http.request.uri', 'http.file_data']
         }
     },
-    tcpstream: {
-        name: 'TCP流追踪',
+    httpAuth: {
+        name: 'HTTP认证',
+        category: 'web',
         config: {
-            quiet: true,
-            tcpStream: '0'
+            customFilter: 'http.authorization || http.www_authenticate',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'http.host', 'http.authorization', 'http.www_authenticate']
         }
     },
-    suspicious: {
-        name: '可疑流量',
+    webUpload: {
+        name: '文件上传',
+        category: 'web',
+        config: {
+            customFilter: 'http.content_type contains "multipart" || http.request.uri contains "upload"',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'http.host', 'http.request.uri', 'http.content_type']
+        }
+    },
+    webshell: {
+        name: 'Webshell检测',
+        category: 'web',
+        config: {
+            customFilter: 'http.request.uri contains ".php" && (http contains "cmd" || http contains "shell" || http contains "eval" || http contains "base64")',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'http.request.uri', 'http.file_data']
+        }
+    },
+    sqli: {
+        name: 'SQL注入',
+        category: 'web',
+        config: {
+            customFilter: 'http.request.uri contains "select" || http.request.uri contains "union" || http contains "SQL syntax"',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'http.host', 'http.request.uri']
+        }
+    },
+
+    // === 三、凭据与敏感信息 ===
+    credentials: {
+        name: 'FTP凭据',
+        category: 'credentials',
+        config: {
+            customFilter: 'ftp.request.command == "USER" || ftp.request.command == "PASS"',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'ftp.request.command', 'ftp.request.arg']
+        }
+    },
+    telnet: {
+        name: 'Telnet会话',
+        category: 'credentials',
+        config: {
+            selectedProtocols: ['telnet'],
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'telnet.data']
+        }
+    },
+    smtp: {
+        name: 'SMTP邮件',
+        category: 'credentials',
+        config: {
+            selectedProtocols: ['smtp'],
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'smtp.req.command', 'smtp.req.parameter']
+        }
+    },
+    imapPop: {
+        name: 'IMAP/POP3',
+        category: 'credentials',
+        config: {
+            customFilter: 'imap || pop',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'imap.request', 'pop.request.command']
+        }
+    },
+    basicAuth: {
+        name: 'Basic认证',
+        category: 'credentials',
+        config: {
+            customFilter: 'http.authorization contains "Basic"',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'http.host', 'http.authorization']
+        }
+    },
+    flagSearch: {
+        name: 'Flag搜索',
+        category: 'credentials',
+        config: {
+            containsKeyword: 'flag',
+            outputFormat: 'default'
+        }
+    },
+
+    // === 四、DNS分析 ===
+    dns: {
+        name: 'DNS查询',
+        category: 'dns',
+        config: {
+            selectedProtocols: ['dns.qry.name'],
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'dns.qry.name', 'dns.a']
+        }
+    },
+    dnsStats: {
+        name: 'DNS统计',
+        category: 'dns',
+        config: { quiet: true, statistics: ['dns,tree'] }
+    },
+    dnsTunnel: {
+        name: 'DNS隧道',
+        category: 'dns',
+        config: {
+            customFilter: 'dns.qry.name && frame.len > 100',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'dns.qry.name', 'dns.qry.type', 'frame.len']
+        }
+    },
+    dnsExfil: {
+        name: 'DNS外传',
+        category: 'dns',
+        config: {
+            customFilter: 'dns.qry.type == 16 || dns.qry.type == 28',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'dns.qry.name', 'dns.txt', 'dns.aaaa']
+        }
+    },
+
+    // === 五、隐写与数据提取 ===
+    icmpData: {
+        name: 'ICMP数据',
+        category: 'stego',
+        config: {
+            selectedProtocols: ['icmp'],
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'icmp.type', 'data.data']
+        }
+    },
+    tcpPayload: {
+        name: 'TCP载荷',
+        category: 'stego',
+        config: {
+            customFilter: 'tcp.payload',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'tcp.srcport', 'tcp.dstport', 'tcp.payload']
+        }
+    },
+    base64Data: {
+        name: 'Base64数据',
+        category: 'stego',
+        config: {
+            containsKeyword: 'base64',
+            outputFormat: 'default'
+        }
+    },
+    hexData: {
+        name: '十六进制',
+        category: 'stego',
+        config: {
+            customFilter: 'data.data',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'data.data']
+        }
+    },
+
+    // === 六、攻击检测 ===
+    portScan: {
+        name: '端口扫描',
+        category: 'attack',
         config: {
             customFilter: 'tcp.flags.syn == 1 && tcp.flags.ack == 0',
             quiet: true,
             statistics: ['conv,ip']
         }
     },
-    timeline: {
-        name: '时间线',
+    synFlood: {
+        name: 'SYN洪泛',
+        category: 'attack',
         config: {
+            customFilter: 'tcp.flags.syn == 1 && tcp.flags.ack == 0',
             outputFormat: 'fields',
-            selectedFields: ['frame.time', 'ip.src', 'ip.dst', 'frame.protocols', 'frame.len']
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'tcp.dstport']
         }
     },
-    expert: {
-        name: '专家分析',
+    bruteforce: {
+        name: '暴力破解',
+        category: 'attack',
         config: {
+            customFilter: 'http.response.code == 401 || ftp.response.code == 530 || ssh',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'http.response.code', 'ftp.response.code']
+        }
+    },
+    c2: {
+        name: 'C2通信',
+        category: 'attack',
+        config: {
+            customFilter: 'http.request.method == "POST" && frame.len < 500',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'http.host', 'http.request.uri']
+        }
+    },
+    malwareDns: {
+        name: '恶意域名',
+        category: 'attack',
+        config: {
+            customFilter: 'dns.qry.name contains ".tk" || dns.qry.name contains ".top" || dns.qry.name matches "^[a-z]{20,}"',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'dns.qry.name', 'dns.a']
+        }
+    },
+
+    // === 七、流追踪类 ===
+    tcpstream: {
+        name: 'TCP流0',
+        category: 'stream',
+        config: { quiet: true, tcpStream: '0' }
+    },
+    httpObjects: {
+        name: 'HTTP对象',
+        category: 'stream',
+        config: { quiet: true, statistics: ['http,tree'] }
+    },
+    ftpData: {
+        name: 'FTP数据',
+        category: 'stream',
+        config: {
+            selectedProtocols: ['ftp-data'],
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'ftp-data.command']
+        }
+    },
+    smbFiles: {
+        name: 'SMB文件',
+        category: 'stream',
+        config: {
+            customFilter: 'smb2.filename || smb.file',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'smb2.filename', 'smb.file']
+        }
+    },
+
+    // === 八、TLS/加密流量 ===
+    tlsHandshake: {
+        name: 'TLS握手',
+        category: 'tls',
+        config: {
+            customFilter: 'tls.handshake',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'tls.handshake.type', 'tls.handshake.extensions_server_name']
+        }
+    },
+    tlsSni: {
+        name: 'TLS SNI',
+        category: 'tls',
+        config: {
+            customFilter: 'tls.handshake.extensions_server_name',
+            outputFormat: 'fields',
+            selectedFields: ['frame.number', 'ip.src', 'ip.dst', 'tls.handshake.extensions_server_name']
+        }
+    },
+    sshTraffic: {
+        name: 'SSH流量',
+        category: 'tls',
+        config: {
+            selectedProtocols: ['ssh'],
             quiet: true,
-            statistics: ['expert']
+            statistics: ['conv,tcp']
         }
     }
 };

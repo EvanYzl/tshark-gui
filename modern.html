@@ -183,112 +183,135 @@
             <section id="tab-scenarios" class="tab-content">
                 <div class="panel-header">
                     <h2>快捷场景</h2>
-                    <p>一键生成常用取证分析命令</p>
+                    <p>CTF流量取证常见题型一键分析 (共8大类40+模板)</p>
                 </div>
-                <div class="scenarios-grid">
-                    <button class="scenario-card" data-scenario="protocol">
-                        <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
-                            <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
-                        </svg>
-                        <span class="s-title">协议分布</span>
-                    </button>
-                    <button class="scenario-card" data-scenario="ipconv">
-                        <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                        </svg>
-                        <span class="s-title">IP通信对</span>
-                    </button>
-                    <button class="scenario-card" data-scenario="http">
-                        <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="2" y1="12" x2="22" y2="12"></line>
-                            <path
-                                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
-                            </path>
-                        </svg>
-                        <span class="s-title">HTTP请求</span>
-                    </button>
-                    <button class="scenario-card" data-scenario="dns">
-                        <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                        <span class="s-title">DNS查询</span>
-                    </button>
-                    <button class="scenario-card" data-scenario="credentials">
-                        <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <path
-                                d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4">
-                            </path>
-                        </svg>
-                        <span class="s-title">提取凭据</span>
-                    </button>
-                    <button class="scenario-card" data-scenario="useragent">
-                        <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                            <line x1="8" y1="21" x2="16" y2="21"></line>
-                            <line x1="12" y1="17" x2="12" y2="21"></line>
-                        </svg>
-                        <span class="s-title">User-Agent</span>
-                    </button>
-                    <button class="scenario-card" data-scenario="cookies">
-                        <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
-                        </svg>
-                        <span class="s-title">Cookies</span>
-                    </button>
-                    <button class="scenario-card" data-scenario="post">
-                        <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="17 8 12 3 7 8"></polyline>
-                            <line x1="12" y1="3" x2="12" y2="15"></line>
-                        </svg>
-                        <span class="s-title">POST数据</span>
-                    </button>
-                    <button class="scenario-card" data-scenario="tcpstream">
-                        <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <path d="M23 4v6h-6"></path>
-                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                        </svg>
-                        <span class="s-title">TCP流追踪</span>
-                    </button>
-                    <button class="scenario-card" data-scenario="suspicious">
-                        <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <path
-                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
-                            </path>
-                            <line x1="12" y1="9" x2="12" y2="13"></line>
-                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                        </svg>
-                        <span class="s-title">可疑流量</span>
-                    </button>
-                    <button class="scenario-card" data-scenario="timeline">
-                        <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                        </svg>
-                        <span class="s-title">时间线</span>
-                    </button>
-                    <button class="scenario-card" data-scenario="expert">
-                        <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                        </svg>
-                        <span class="s-title">专家分析</span>
-                    </button>
+
+                <!-- 一、基础分析 -->
+                <div class="scenario-category">
+                    <h3 class="category-title">基础分析</h3>
+                    <div class="scenarios-grid">
+                        <button class="scenario-card" data-scenario="protocol"><span
+                                class="s-title">协议分布</span></button>
+                        <button class="scenario-card" data-scenario="ipconv"><span class="s-title">IP通信对</span></button>
+                        <button class="scenario-card" data-scenario="tcpconv"><span
+                                class="s-title">TCP会话</span></button>
+                        <button class="scenario-card" data-scenario="endpoints"><span
+                                class="s-title">端点统计</span></button>
+                        <button class="scenario-card" data-scenario="timeline"><span class="s-title">时间线</span></button>
+                        <button class="scenario-card" data-scenario="expert"><span class="s-title">专家分析</span></button>
+                    </div>
+                </div>
+
+                <!-- 二、HTTP/Web分析 -->
+                <div class="scenario-category">
+                    <h3 class="category-title">HTTP/Web分析</h3>
+                    <div class="scenarios-grid">
+                        <button class="scenario-card" data-scenario="http"><span class="s-title">HTTP请求</span></button>
+                        <button class="scenario-card" data-scenario="httpResponse"><span
+                                class="s-title">HTTP响应</span></button>
+                        <button class="scenario-card" data-scenario="useragent"><span
+                                class="s-title">User-Agent</span></button>
+                        <button class="scenario-card" data-scenario="cookies"><span
+                                class="s-title">Cookies</span></button>
+                        <button class="scenario-card" data-scenario="post"><span class="s-title">POST数据</span></button>
+                        <button class="scenario-card" data-scenario="httpAuth"><span
+                                class="s-title">HTTP认证</span></button>
+                        <button class="scenario-card" data-scenario="webUpload"><span
+                                class="s-title">文件上传</span></button>
+                        <button class="scenario-card" data-scenario="webshell"><span
+                                class="s-title">Webshell检测</span></button>
+                        <button class="scenario-card" data-scenario="sqli"><span class="s-title">SQL注入</span></button>
+                    </div>
+                </div>
+
+                <!-- 三、凭据与敏感信息 -->
+                <div class="scenario-category">
+                    <h3 class="category-title">凭据与敏感信息</h3>
+                    <div class="scenarios-grid">
+                        <button class="scenario-card" data-scenario="credentials"><span
+                                class="s-title">FTP凭据</span></button>
+                        <button class="scenario-card" data-scenario="telnet"><span
+                                class="s-title">Telnet会话</span></button>
+                        <button class="scenario-card" data-scenario="smtp"><span class="s-title">SMTP邮件</span></button>
+                        <button class="scenario-card" data-scenario="imapPop"><span
+                                class="s-title">IMAP/POP3</span></button>
+                        <button class="scenario-card" data-scenario="basicAuth"><span
+                                class="s-title">Basic认证</span></button>
+                        <button class="scenario-card" data-scenario="flagSearch"><span
+                                class="s-title">Flag搜索</span></button>
+                    </div>
+                </div>
+
+                <!-- 四、DNS分析 -->
+                <div class="scenario-category">
+                    <h3 class="category-title">DNS分析</h3>
+                    <div class="scenarios-grid">
+                        <button class="scenario-card" data-scenario="dns"><span class="s-title">DNS查询</span></button>
+                        <button class="scenario-card" data-scenario="dnsStats"><span
+                                class="s-title">DNS统计</span></button>
+                        <button class="scenario-card" data-scenario="dnsTunnel"><span
+                                class="s-title">DNS隧道</span></button>
+                        <button class="scenario-card" data-scenario="dnsExfil"><span
+                                class="s-title">DNS外传</span></button>
+                    </div>
+                </div>
+
+                <!-- 五、隐写与数据提取 -->
+                <div class="scenario-category">
+                    <h3 class="category-title">隐写与数据提取</h3>
+                    <div class="scenarios-grid">
+                        <button class="scenario-card" data-scenario="icmpData"><span
+                                class="s-title">ICMP数据</span></button>
+                        <button class="scenario-card" data-scenario="tcpPayload"><span
+                                class="s-title">TCP载荷</span></button>
+                        <button class="scenario-card" data-scenario="base64Data"><span
+                                class="s-title">Base64数据</span></button>
+                        <button class="scenario-card" data-scenario="hexData"><span class="s-title">十六进制</span></button>
+                    </div>
+                </div>
+
+                <!-- 六、攻击检测 -->
+                <div class="scenario-category">
+                    <h3 class="category-title">攻击检测</h3>
+                    <div class="scenarios-grid">
+                        <button class="scenario-card" data-scenario="portScan"><span
+                                class="s-title">端口扫描</span></button>
+                        <button class="scenario-card" data-scenario="synFlood"><span
+                                class="s-title">SYN洪泛</span></button>
+                        <button class="scenario-card" data-scenario="bruteforce"><span
+                                class="s-title">暴力破解</span></button>
+                        <button class="scenario-card" data-scenario="c2"><span class="s-title">C2通信</span></button>
+                        <button class="scenario-card" data-scenario="malwareDns"><span
+                                class="s-title">恶意域名</span></button>
+                    </div>
+                </div>
+
+                <!-- 七、流追踪类 -->
+                <div class="scenario-category">
+                    <h3 class="category-title">流追踪</h3>
+                    <div class="scenarios-grid">
+                        <button class="scenario-card" data-scenario="tcpstream"><span
+                                class="s-title">TCP流0</span></button>
+                        <button class="scenario-card" data-scenario="httpObjects"><span
+                                class="s-title">HTTP对象</span></button>
+                        <button class="scenario-card" data-scenario="ftpData"><span
+                                class="s-title">FTP数据</span></button>
+                        <button class="scenario-card" data-scenario="smbFiles"><span
+                                class="s-title">SMB文件</span></button>
+                    </div>
+                </div>
+
+                <!-- 八、TLS/加密流量 -->
+                <div class="scenario-category">
+                    <h3 class="category-title">TLS/加密流量</h3>
+                    <div class="scenarios-grid">
+                        <button class="scenario-card" data-scenario="tlsHandshake"><span
+                                class="s-title">TLS握手</span></button>
+                        <button class="scenario-card" data-scenario="tlsSni"><span class="s-title">TLS
+                                SNI</span></button>
+                        <button class="scenario-card" data-scenario="sshTraffic"><span
+                                class="s-title">SSH流量</span></button>
+                    </div>
                 </div>
             </section>
 
