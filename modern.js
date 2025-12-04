@@ -985,7 +985,9 @@ function generateCommand() {
     // Display filter
     const filter = buildDisplayFilter();
     if (filter) {
-        cmd += ` -Y "${filter}"`;
+        // Escape double quotes for shell
+        const escapedFilter = filter.replace(/"/g, '\\"');
+        cmd += ` -Y "${escapedFilter}"`;
     }
 
     // Quiet mode
